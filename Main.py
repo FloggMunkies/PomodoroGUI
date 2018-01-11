@@ -29,8 +29,14 @@ class Pomodoro:
         self.update_clock()
 
         # Close button (REPLACE WITH CHECKMARKS)
-        self.close_button = tk.Button(master, text="Close", command=master.quit)
-        self.close_button.grid(row=0, column=1, sticky=tk.N+tk.S+tk.E+tk.W)
+        # self.close_button = tk.Button(master, text="Close", command=master.quit)
+        # self.close_button.grid(row=0, column=1, sticky=tk.N+tk.S+tk.E+tk.W)
+
+        # Checkmarks
+        self.marks = 0
+        self.checkmark = tk.Label(master, image=CHECKMARK0)
+        self.checkmark.photo = CHECKMARK0
+        self.checkmark.grid(row=0, column=1, sticky=tk.N+tk.S+tk.E+tk.W)
 
         # Start timer (DUMMY)
         self.switch = False
@@ -42,11 +48,25 @@ class Pomodoro:
         self.custom_timer.insert(tk.END, "0")
         self.custom_timer.grid(row=1, column=1, sticky=tk.N+tk.S+tk.E+tk.W)
 
+        # Break Timer (Start Timer Copy)
+        self.switch = False
+        self.break_button = tk.Button(master, text="Break Timer", command=self.run_timer)
+        self.break_button.grid(row=2, column=0, sticky=tk.N + tk.S + tk.E + tk.W)
+
+        # Break Custom Time
+        self.break_timer = tk.Text(root, width=3, height=1)
+        self.break_timer.insert(tk.END, "0")
+        self.break_timer.grid(row=2, column=1, sticky=tk.N + tk.S + tk.E + tk.W)
+
         # Text entry
         self.submit_button = tk.Button(master, text="Submit", command=self.submit)
-        self.submit_button.grid(row=4, column=1,  sticky=tk.N+tk.S+tk.E+tk.W)
-        self.text = ScrolledText(root, width=56, height=8)
-        self.text.grid(row=3, columnspan=2, sticky=tk.N+tk.S+tk.E+tk.W)
+        self.submit_button.grid(row=3, column=1,  sticky=tk.E+tk.W)
+        self.text = ScrolledText(root, width=32, height=8)
+        self.text.grid(row=0, column=2, rowspan=3, sticky=tk.N+tk.S+tk.E+tk.W)
+
+        # Reset Button
+        self.reset_button = tk.Button(master, text="Reset")
+        self.reset_button.grid(row=3, column=0, sticky=tk.N+tk.S+tk.E+tk.W)
 
     def update_clock(self):
         # Update clock label every second
@@ -56,13 +76,38 @@ class Pomodoro:
 
     def run_timer(self):
         # Self referential function to wait 5 seconds and switching modes to indicate time is up
-        print("Switch is set to", self.switch)
+        # TODO Problem when repeatedly pushing button before timer is up.
+        if DEBUG:
+            print("Switch is set to", self.switch)
         if self.switch:
             print("Timer is up!")
             self.switch = False
+            self.update_marks()
             return
         root.after(5000, self.run_timer)
         self.switch = not self.switch
+
+    def update_marks(self):
+        if self.marks is 0:
+            self.marks = 1
+            self.checkmark.configure(image=CHECKMARK1)
+            self.checkmark.image = CHECKMARK1
+        elif self.marks is 1:
+            self.marks = 2
+            self.checkmark.configure(image=CHECKMARK2)
+            self.checkmark.image = CHECKMARK2
+        elif self.marks is 2:
+            self.marks = 3
+            self.checkmark.configure(image=CHECKMARK3)
+            self.checkmark.image = CHECKMARK3
+        elif self.marks is 3:
+            self.marks = 4
+            self.checkmark.configure(image=CHECKMARK4)
+            self.checkmark.image = CHECKMARK4
+        else:                                           # Replace with Reset Button
+            self.marks = 0
+            self.checkmark.configure(image=CHECKMARK0)
+            self.checkmark.image = CHECKMARK0
 
     def submit(self):
         #
@@ -72,7 +117,21 @@ class Pomodoro:
         print(text)
 
 
+# Start Tk
 root = tk.Tk()
 root.geometry("480x320+32+32")
+
+# Global Resources
+DEBUG = False
+
+CHECKMARK0 = tk.PhotoImage(file="icon_0.png")
+CHECKMARK1 = tk.PhotoImage(file="icon_1.png")
+CHECKMARK2 = tk.PhotoImage(file="icon_2.png")
+CHECKMARK3 = tk.PhotoImage(file="icon_3.png")
+CHECKMARK4 = tk.PhotoImage(file="icon_4.png")
+
+# Class initialization
 gui = Pomodoro(root)
+
+# Main loop
 root.mainloop()

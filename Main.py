@@ -17,7 +17,7 @@ class Pomodoro:
     This App allows for you to easily set and start your timer and keep track of checkmarks, with the added bonus of
     keeping a log of your work related to step 1 in a text file.
 
-    TODO Finish the timer button, Checkmarks, break timers, final reset, Make pretty, unit test
+    TODO Integrate custom time for timer, change break timer to be its own thing, Implement reset button, add File location box.
 
     """
     def __init__(self, master):
@@ -75,17 +75,13 @@ class Pomodoro:
         root.after(1000, self.update_clock)
 
     def run_timer(self):
-        # Self referential function to wait 5 seconds and switching modes to indicate time is up
-        # TODO Problem when repeatedly pushing button before timer is up.
-        if DEBUG:
-            print("Switch is set to", self.switch)
-        if self.switch:
-            print("Timer is up!")
-            self.switch = False
+        if self.run_button["state"] == tk.DISABLED:
+            print("Time is up")
+            self.run_button.config(state=tk.NORMAL)
             self.update_marks()
-            return
-        root.after(5000, self.run_timer)
-        self.switch = not self.switch
+        else:
+            root.after(5000, self.run_timer)
+            self.run_button.config(state=tk.DISABLED)
 
     def update_marks(self):
         if self.marks is 0:
@@ -120,6 +116,8 @@ class Pomodoro:
 # Start Tk
 root = tk.Tk()
 root.geometry("480x320+32+32")
+
+
 
 # Global Resources
 DEBUG = False
